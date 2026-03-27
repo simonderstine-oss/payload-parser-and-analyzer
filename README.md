@@ -7,9 +7,9 @@ A lightweight Chrome extension for integration engineers who need to:
 - compare the payload against required and recommended parameters
 - quickly spot missing or unexpected fields
 
-## What the first version does
+## What version 1.0.0 does
 
-- Parses payloads like `email=test@example.com&first_name=Sam&last_name=Lee`
+- Parses payloads like `CampaignId=49232&ActionTrackerId=70053`
 - Decodes URL-encoded values
 - Displays one `key=value` pair per line
 - Flags missing required parameters
@@ -40,6 +40,16 @@ A lightweight Chrome extension for integration engineers who need to:
    - unexpected parameters
    - a readable one-line-per-parameter version of the payload
 5. Click **Edit Rules** to maintain your required, recommended, and optional parameter lists
+
+## Chrome Web Store prep
+
+This repo now includes:
+
+- manifest icons in `assets/icons/`
+- a privacy policy draft in `PRIVACY.md`
+- a store submission checklist in `CHROME_WEB_STORE.md`
+
+For distribution through the Chrome Web Store, each user installs the extension into their own browser. The extension runs locally in Chrome; GitHub stores the source code, but GitHub does not host the running extension experience.
 
 ## Default rule set included
 

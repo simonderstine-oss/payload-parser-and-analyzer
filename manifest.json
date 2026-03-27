@@ -1,14 +1,25 @@
 {
   "manifest_version": 3,
   "name": "Payload Parameter Inspector",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Parse inbound payloads and compare them to required and recommended parameter lists.",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
   "permissions": [
     "storage"
   ],
   "action": {
     "default_title": "Payload Parameter Inspector",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png"
+    }
   },
-  "options_page": "options.html"
+  "options_page": "options.html",
+  "homepage_url": "https://github.com/simonderstine-oss/payload-parser-and-analyzer"
 }
