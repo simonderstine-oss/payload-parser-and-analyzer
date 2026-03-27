@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Payload Parameter Inspector",
+  "version": "0.1.0",
+  "description": "Parse inbound payloads and compare them to required and recommended parameter lists.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "Payload Parameter Inspector",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html"
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payload Parameter Inspector Settings</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="options-page">
+    <main class="panel options-panel">
+      <header class="hero">
+        <p class="eyebrow">Rule Configuration</p>
+        <h1>Saved Parameter Lists</h1>
+        <p class="subtitle">Enter one parameter per line or separate them with commas. Matching is case-insensitive.</p>
+      </header>
+
+      <section class="card">
+        <label class="label" for="requiredInput">Required parameters</label>
+        <textarea id="requiredInput" class="textarea tall"></textarea>
+      </section>
+
+      <section class="card">
+        <label class="label" for="recommendedInput">Recommended parameters</label>
+        <textarea id="recommendedInput" class="textarea tall"></textarea>
+      </section>
+
+      <section class="card">
+        <label class="label" for="optionalInput">Optional parameters</label>
+        <textarea id="optionalInput" class="textarea tall"></textarea>
+      </section>
+
+      <section class="button-row">
+        <button id="saveButton" class="primary-button" type="button">Save Rules</button>
+        <button id="resetButton" class="secondary-button" type="button">Reset Defaults</button>
+        <span id="statusMessage" class="status-message" aria-live="polite"></span>
+      </section>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

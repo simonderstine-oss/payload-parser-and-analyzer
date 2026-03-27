@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payload Parameter Inspector</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="popup-page dark-theme">
+    <main class="popup-shell">
+      <article class="ui-card">
+        <p class="section-eyebrow">Raw Payload Input</p>
+        <textarea id="payloadInput" class="payload-input" placeholder="CampaignId=49232&ActionTrackerId=70053&EventDate=27-Mar-2026%2008%3A42%3A23%20UTC"></textarea>
+        <div class="button-row">
+          <button id="analyzeButton" class="primary-button" type="button">Parse and analyze</button>
+          <button id="clearButton" class="secondary-button" type="button">Clear</button>
+          <button id="openOptionsButton" class="secondary-button" type="button">Edit Rules</button>
+        </div>
+      </article>
+
+      <article class="ui-card" id="validationCard" hidden>
+        <p class="section-eyebrow">Validation Results</p>
+
+        <div class="summary-pill-row">
+          <span class="summary-pill summary-pill-blue" id="parsedSummary">0 params</span>
+          <span class="summary-pill summary-pill-red" id="missingRequiredSummary">0 Missing Required</span>
+          <span class="summary-pill summary-pill-amber" id="missingRecommendedSummary">0 Missing Recommended</span>
+          <span class="summary-pill summary-pill-slate" id="extraSummary">0 Unexpected</span>
+        </div>
+
+        <div class="result-block">
+          <h2>Missing required</h2>
+          <div id="missingRequiredList" class="result-stack"></div>
+        </div>
+
+        <div class="result-block">
+          <h2>Missing recommended</h2>
+          <div id="missingRecommendedList" class="result-stack"></div>
+        </div>
+
+        <div class="result-block">
+          <h2>Unexpected parameters</h2>
+          <div id="extraList" class="result-stack"></div>
+        </div>
+      </article>
+
+      <article class="ui-card parsed-card" id="parsedCard" hidden>
+        <div class="parsed-header">
+          <p class="section-eyebrow">Parsed Parameters</p>
+          <button id="copyReadableButton" class="secondary-button compact-button" type="button">Copy parsed</button>
+        </div>
+
+        <div class="parsed-table-wrap">
+          <table class="parsed-table">
+            <thead>
+              <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Level</th>
+              </tr>
+            </thead>
+            <tbody id="parsedTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
