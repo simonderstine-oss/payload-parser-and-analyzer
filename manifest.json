@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Payload Parameter Inspector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parse inbound payloads and compare them to required and recommended parameter lists.",
   "icons": {
     "16": "assets/icons/icon-16.png",
