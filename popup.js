@@ -1,17 +1,22 @@
 import {
   comparePayloadToRules,
+  getDefaultProfile,
   getDefaultRules,
+  getSupportedProfiles,
   parsePayload,
   sanitizeRules
 } from "./lib/parser.js";
 
 const STORAGE_KEY = "payloadInspectorRules";
+const MODE_KEY = "payloadInspectorMode";
 
 const payloadInput = document.querySelector("#payloadInput");
 const analyzeButton = document.querySelector("#analyzeButton");
 const clearButton = document.querySelector("#clearButton");
 const openOptionsButton = document.querySelector("#openOptionsButton");
 const copyReadableButton = document.querySelector("#copyReadableButton");
+const apiModeButton = document.querySelector("#apiModeButton");
+const jsModeButton = document.querySelector("#jsModeButton");
 const validationCard = document.querySelector("#validationCard");
 const parsedCard = document.querySelector("#parsedCard");
 const parsedSummary = document.querySelector("#parsedSummary");
@@ -21,9 +26,12 @@ const extraSummary = document.querySelector("#extraSummary");
 const missingRequiredList = document.querySelector("#missingRequiredList");
 const missingRecommendedList = document.querySelector("#missingRecommendedList");
 const extraList = document.querySelector("#extraList");
+const specialBlock = document.querySelector("#specialBlock");
+const specialList = document.querySelector("#specialList");
 const parsedTableBody = document.querySelector("#parsedTableBody");
 
 let lastReadablePayload = "";
+let currentMode = getDefaultProfile();
 const TEXTAREA_MAX_LINES = 25;
 
 function autoSizeTextarea() {
@@ -40,13 +48,50 @@ function autoSizeTextarea() {
   payloadInput.style.overflowY = payloadInput.scrollHeight > maxHeight ? "auto" : "hidden";
 }
 
-async function getRules() {
+function setModeUI(mode) {
+  currentMode = mode;
+
+  [
+    [apiModeButton, mode === "api"],
+    [jsModeButton, mode === "js"]
+  ].forEach(([button, isActive]) => {
+    button.classList.toggle("mode-button-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  payloadInput.placeholder = mode === "js"
+    ? "oid=8BD5A44D-9D2E-F111-99E0-0050569DF051&currcd=USD&amt1=42.95&cat1=Horse%20Supplies"
+    : "CampaignId=49232&ActionTrackerId=70053&EventDate=27-Mar-2026%2008%3A42%3A23%20UTC";
+}
+
+async function loadMode() {
+  const stored = await chrome.storage.local.get(MODE_KEY);
+  const supportedProfiles = new Set(getSupportedProfiles().map((profile) => profile.id));
+  const storedMode = stored[MODE_KEY];
+  setModeUI(supportedProfiles.has(storedMode) ? storedMode : getDefaultProfile());
+}
+
+async function saveMode(mode) {
+  setModeUI(mode);
+  await chrome.storage.local.set({
+    [MODE_KEY]: mode
+  });
+}
+
+async function getRules(mode = currentMode) {
   const stored = await chrome.storage.local.get(STORAGE_KEY);
-  if (!stored[STORAGE_KEY]) {
-    return getDefaultRules();
+  const allStoredRules = stored[STORAGE_KEY] || {};
+  const hasLegacyShape = allStoredRules.requiredText || allStoredRules.recommendedText || allStoredRules.optionalText;
+
+  if (mode === "api" && hasLegacyShape) {
+    return sanitizeRules(allStoredRules, mode);
   }
 
-  return sanitizeRules(stored[STORAGE_KEY]);
+  if (!allStoredRules[mode]) {
+    return getDefaultRules(mode);
+  }
+
+  return sanitizeRules(allStoredRules[mode], mode);
 }
 
 function renderResultCards(container, items, emptyLabel, variant) {
@@ -65,7 +110,8 @@ function renderResultCards(container, items, emptyLabel, variant) {
     row.className = `result-item result-item-${variant}`;
 
     const name = document.createElement("strong");
-    name.textContent = item.raw || item.key || "";
+    const baseName = item.raw || item.key || "";
+    name.textContent = item.alias ? `${baseName}(${item.alias})` : baseName;
 
     const description = document.createElement("span");
     description.textContent = item.description || "";
@@ -77,7 +123,7 @@ function renderResultCards(container, items, emptyLabel, variant) {
 
 function formatReadablePayload(entries) {
   return entries
-    .map((entry) => `${entry.key}=${entry.value}`)
+    .map((entry) => `${entry.displayKey}=${entry.value}`)
     .join("\n");
 }
 
@@ -93,7 +139,7 @@ function renderParsedRows(rows) {
 
     const parameterCell = document.createElement("td");
     parameterCell.className = "parameter-cell";
-    parameterCell.textContent = row.key;
+    parameterCell.textContent = row.displayKey;
 
     const valueCell = document.createElement("td");
     valueCell.className = "value-cell";
@@ -121,8 +167,8 @@ async function analyzePayload() {
     return;
   }
 
-  const rules = await getRules();
-  const parsed = parsePayload(rawPayload);
+  const rules = await getRules(currentMode);
+  const parsed = parsePayload(rawPayload, currentMode, rules);
   const comparison = comparePayloadToRules(parsed, rules);
 
   lastReadablePayload = formatReadablePayload(parsed.entries);
@@ -137,6 +183,8 @@ async function analyzePayload() {
   renderResultCards(missingRequiredList, comparison.missingRequired, "No required parameters missing", "required");
   renderResultCards(missingRecommendedList, comparison.missingRecommended, "No recommended parameters missing", "recommended");
   renderResultCards(extraList, comparison.extras, "No unexpected parameters", "extra");
+  renderResultCards(specialList, comparison.specialParams, "No special session payload found", "special");
+  specialBlock.hidden = comparison.specialParams.length === 0;
   renderParsedRows(comparison.parsedRows);
 
   validationCard.hidden = false;
@@ -145,6 +193,14 @@ async function analyzePayload() {
 
 analyzeButton.addEventListener("click", () => {
   analyzePayload();
+});
+
+apiModeButton.addEventListener("click", () => {
+  saveMode("api");
+});
+
+jsModeButton.addEventListener("click", () => {
+  saveMode("js");
 });
 
 payloadInput.addEventListener("keydown", (event) => {
@@ -159,6 +215,7 @@ clearButton.addEventListener("click", () => {
   payloadInput.value = "";
   validationCard.hidden = true;
   parsedCard.hidden = true;
+  specialBlock.hidden = true;
   parsedTableBody.replaceChildren();
   lastReadablePayload = "";
   autoSizeTextarea();
@@ -181,4 +238,5 @@ copyReadableButton.addEventListener("click", async () => {
   }, 1500);
 });
 
+loadMode();
 autoSizeTextarea();

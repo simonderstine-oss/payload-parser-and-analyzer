@@ -15,6 +15,17 @@
       </header>
 
       <section class="card">
+        <label class="label" for="profileSelect">Integration mode</label>
+        <select id="profileSelect" class="select-input"></select>
+      </section>
+
+      <section id="aliasSection" class="card" hidden>
+        <label class="label">Alias reference</label>
+        <p class="subtitle compact-subtitle">Shortened payload keys are mapped to these readable parameter names before validation.</p>
+        <div id="aliasList" class="alias-list"></div>
+      </section>
+
+      <section class="card">
         <label class="label" for="requiredInput">Required parameters</label>
         <textarea id="requiredInput" class="textarea tall"></textarea>
       </section>

@@ -10,6 +10,10 @@
     <main class="popup-shell">
       <article class="ui-card">
         <p class="section-eyebrow">Raw Payload Input</p>
+        <div class="mode-switcher" role="group" aria-label="Integration type">
+          <button id="apiModeButton" class="mode-button mode-button-active" type="button" aria-pressed="true">API</button>
+          <button id="jsModeButton" class="mode-button" type="button" aria-pressed="false">JS</button>
+        </div>
         <textarea id="payloadInput" class="payload-input" placeholder="CampaignId=49232&ActionTrackerId=70053&EventDate=27-Mar-2026%2008%3A42%3A23%20UTC"></textarea>
         <div class="button-row">
           <button id="analyzeButton" class="primary-button" type="button">Parse and analyze</button>
@@ -41,6 +45,11 @@
         <div class="result-block">
           <h2>Unexpected parameters</h2>
           <div id="extraList" class="result-stack"></div>
+        </div>
+
+        <div class="result-block" id="specialBlock" hidden>
+          <h2>Session payload</h2>
+          <div id="specialList" class="result-stack"></div>
         </div>
       </article>
 
